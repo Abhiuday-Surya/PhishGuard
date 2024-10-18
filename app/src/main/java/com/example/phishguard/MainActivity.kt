@@ -1,6 +1,7 @@
 package com.example.phishguard
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,17 +17,30 @@ import com.example.phishguard.ui.theme.PhishGuardTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PhishGuardTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_link_handler)
+
+        val btnPrevious = findViewById<Button>(R.id.btnPrevious)
+        val btnNext = findViewById<Button>(R.id.btnNext)
+
+        btnPrevious.setOnClickListener {
+            finish()
         }
+        btnNext.setOnClickListener {
+        }
+
+
+
+//        enableEdgeToEdge()
+//        setContent {
+//            PhishGuardTheme {
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    Greeting(
+//                        name = "Android",
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
+//                }
+//            }
+//        }
     }
 }
 

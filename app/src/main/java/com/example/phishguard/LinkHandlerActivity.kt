@@ -1,12 +1,14 @@
-package com.example.phishingdetector
+package com.example.phishguard
 
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import com.example.phishguard.R
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,6 +24,11 @@ class LinkHandlerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_link_handler)
 
+        val imageSwitcher = findViewById<ImageView>(R.id.imageSwitcher)
+        imageSwitcher.setImageResource(R.drawable.neutral_image) // Ensure placeholder is set initially
+        val btnPrevious = findViewById<Button>(R.id.btnPrevious)
+        val btnNext = findViewById<Button>(R.id.btnNext)
+
         // Get the incoming URL
         val intent = intent
         val url: Uri? = intent.data
@@ -29,16 +36,28 @@ class LinkHandlerActivity : Activity() {
         // If there's a valid URL, check if it's genuine
         if (url != null) {
             val urlString = url.toString()
-            checkLinkGenuineness(urlString)
+            checkLinkGenuineness(urlString, imageSwitcher)
+
+            btnNext.setOnClickListener {
+                openLinkInBrowser(urlString)
+            }
+
+            // Previous button click event
+            btnPrevious.setOnClickListener {
+                finish()
+            }
+
+        } else {
+            findViewById<TextView>(R.id.textView).text = "No URL provided."
         }
     }
 
-    private fun checkLinkGenuineness(url: String) {
-        // Display loading screen while checking
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun checkLinkGenuineness(url: String, imageSwitcher: ImageView) {
         findViewById<TextView>(R.id.textView).text = "Checking URL..."
 
         GlobalScope.launch(Dispatchers.IO) {
-            val response = checkUrlWithApi(url) // Get the full response
+            val response = checkUrlWithApi(url)
 
             withContext(Dispatchers.Main) {
                 if (response != null && response.success) {
@@ -48,13 +67,16 @@ class LinkHandlerActivity : Activity() {
                     } else {
                         "Warning! This URL may be malicious."
                     }
-                    findViewById<TextView>(R.id.textView2).text = "Trust Score: ${response.riskScore}"
+                    findViewById<TextView>(R.id.textView2).text = "Risk Score: ${response.riskScore}"
 
-                    if (isGenuine) {
-                        openLinkInBrowser(url)
-                    }
+                    imageSwitcher.setImageResource(if (isGenuine) R.drawable.check_image else R.drawable.cross_image)
+
+                    findViewById<TextView>(R.id.textView3).text = "Domain: ${response.domain}\nSuspicious: ${response.suspicious.toString()}\nPhishing: ${response.phishing.toString()}\nMalware: ${response.malware.toString()}\nSpamming: ${response.spamming.toString()}\nAdult: ${response.adult.toString()}"
+
+                    
                 } else {
                     findViewById<TextView>(R.id.textView).text = "Error checking URL."
+                    imageSwitcher.setImageResource(R.drawable.cross_image)
                 }
             }
         }
