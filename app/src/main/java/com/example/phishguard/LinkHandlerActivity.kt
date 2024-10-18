@@ -61,19 +61,22 @@ class LinkHandlerActivity : Activity() {
 
             withContext(Dispatchers.Main) {
                 if (response != null && response.success) {
-                    val isGenuine = !(response.unsafe || response.suspicious || response.phishing || response.malware || response.spamming || response.adult)
+                    val isGenuine =
+                        !(response.unsafe || response.suspicious || response.phishing || response.malware || response.spamming || response.adult)
                     findViewById<TextView>(R.id.textView).text = if (isGenuine) {
                         "This URL is genuine."
                     } else {
                         "Warning! This URL may be malicious."
                     }
-                    findViewById<TextView>(R.id.textView2).text = "Risk Score: ${response.riskScore}"
+                    findViewById<TextView>(R.id.textView2).text =
+                        "Risk Score: ${response.riskScore}"
 
                     imageSwitcher.setImageResource(if (isGenuine) R.drawable.check_image else R.drawable.cross_image)
 
-                    findViewById<TextView>(R.id.textView3).text = "Domain: ${response.domain}\nSuspicious: ${response.suspicious.toString()}\nPhishing: ${response.phishing.toString()}\nMalware: ${response.malware.toString()}\nSpamming: ${response.spamming.toString()}\nAdult: ${response.adult.toString()}"
+                    findViewById<TextView>(R.id.textView3).text =
+                        "Domain: ${response.domain}\nSuspicious: ${response.suspicious.toString()}\nPhishing: ${response.phishing.toString()}\nMalware: ${response.malware.toString()}\nSpamming: ${response.spamming.toString()}\nAdult: ${response.adult.toString()}"
 
-                    
+
                 } else {
                     findViewById<TextView>(R.id.textView).text = "Error checking URL."
                     imageSwitcher.setImageResource(R.drawable.cross_image)
